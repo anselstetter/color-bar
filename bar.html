@@ -1,0 +1,110 @@
+<!DOCTYPE html> 
+<html> 
+	<head>
+		<title>Colorbar</title>
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+		<style type="text/css">			
+			html,
+			body {
+				height: 100%;
+			}
+
+			body {
+				background: #f9f9f9;
+				font-family: arial, helvetica;
+				line-height: 1.4;
+				padding:20px;
+			}
+			
+			#bar {
+				width:100%;
+				border:solid 1px #ccc;
+				height:25px;
+				-webkit-border-radius: 5px;
+				-moz-border-radius: 5px;
+				border-radius: 5px;
+			}
+			
+			#percentageBar {
+				width:0%;
+				background-color:#ffcc00;
+				height:100%;
+				-webkit-border-radius: 3px;
+				-moz-border-radius: 3px;
+				border-radius: 3px;
+				text-align:right;
+			}
+			
+			#percent {
+				display:block;
+				padding: 0.2em 0.3em 0 0.3em;
+				color:#000;
+				font-weight:bold;
+			}
+		</style>
+	</head>
+	<body id="body">
+		<div id="bar">
+			<div id="percentageBar">
+				<span id="percent"></span>
+			</div>
+		</div>
+	</body>
+	
+	<script src="colorbar.js"></script>
+	<script>
+
+		(function() {
+			if (!window.$) {  
+				var $ = function(element) {
+					return new Wrapper(document.getElementById(element));
+				};
+
+				var Wrapper = function(element) {
+					var wrapped = element;
+
+					var _setStyle = function(style) {
+						for (key in style) {
+							element.style[key] = style[key];
+						}
+					};
+
+					var _update = function(text) {
+						wrapped.innerHTML = text;
+					};
+
+					return {
+						setStyle: _setStyle,
+						update: _update
+					};
+				};
+			}	
+
+			var	yellow = new Color(249, 237, 0),
+				red = new Color(229, 0, 24),
+				green = new Color(84, 180, 34),
+				
+				progressBar = new ProgressBar(green, yellow, red),
+				percentage = 0,
+				interval = setInterval(function() { // Better use requestAnimationFrame
+					progressBar.update(percentage, function(percentage, color) {
+						$("percentageBar").setStyle({
+							"background-color": '#' + color,
+							"width":  percentage + '%'
+						});
+						
+						$("bar").setStyle({
+							"border": 'solid 1px #' + color
+						});	
+										
+						$("percent").update(percentage+"%");
+					});
+
+					if (percentage>=100)
+						clearInterval(interval);
+						
+					percentage++;
+				}, 50);
+		})();		
+	</script>
+</html>
